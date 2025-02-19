@@ -1,0 +1,136 @@
+//package Exercise;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
+
+class MenuItem {
+    String name;
+    double price;
+
+    MenuItem(String name, double price) {
+        this.name = name;
+        this.price = price;
+    }
+}
+
+class Menu {
+    List<MenuItem> items;
+
+    Menu() {
+        items = new ArrayList<>();
+    }
+
+    void addItem(String name, double price) {
+        items.add(new MenuItem(name, price));
+    }
+
+    void displayMenu() {
+        System.out.println("\n===== MENU =====");
+        for (int i = 0; i < items.size(); i++) {
+            System.out.println((i + 1) + ". " + items.get(i).name + " - $" + items.get(i).price);
+        }
+        System.out.println("================");
+    }
+
+    MenuItem getItem(int index) {
+        return items.get(index);
+    }
+
+    int size() {
+        return items.size();
+    }
+}
+
+class FoodOrderingSystem {
+    Menu menu;
+    int[] quantities;
+
+    FoodOrderingSystem(Menu menu) {
+        this.menu = menu;
+        this.quantities = new int[menu.size()]; // Initialize quantities array
+    }
+
+    void takeOrder(Scanner sc) {
+        menu.displayMenu(); // Display the menu once before taking orders
+
+        while (true) {
+            System.out.print("Choose an item (1-" + menu.size() + ") or 0 to finish: ");
+            int choice = sc.nextInt();
+
+            if (choice == 0) {
+                break; // Exit if the user chooses to finish
+            }
+
+            if (choice < 1 || choice > menu.size()) {
+                System.out.println("Invalid choice! Please select a valid item number.");
+                continue; // Skip to the next iteration if the choice is invalid
+            }
+
+            System.out.print("Enter quantity for " + menu.getItem(choice - 1).name + ": ");
+            int quantity = sc.nextInt();
+
+            if (quantity <= 0) {
+                System.out.println("Invalid quantity! Must be at least 1.");
+                continue; // Skip to the next iteration if the quantity is invalid
+            }
+
+            quantities[choice - 1] += quantity; // Add to the existing quantity
+        }
+    }
+
+    void generateBill(String customerName, String customerAddress) {
+        double total = 0;
+        System.out.println("\n===== BILL =====");
+        System.out.println("Customer: " + customerName);
+        System.out.println("Address: " + customerAddress);
+        System.out.println("----------------");
+
+        for (int i = 0; i < menu.size(); i++) {
+            if (quantities[i] > 0) {
+                double itemTotal = quantities[i] * menu.getItem(i).price;
+                System.out.printf("%-10s x %d = $%.2f%n", menu.getItem(i).name, quantities[i], itemTotal);
+                total += itemTotal;
+            }
+        }
+        System.out.println("----------------");
+        System.out.printf("Total Amount: $%.2f%n", total);
+        System.out.println("================");
+    }
+}
+
+class OrderSystem extends FoodOrderingSystem {
+    String customerName;
+    String customerAddress;
+
+    OrderSystem(Menu menu) {
+        super(menu); // Call the constructor of the parent class
+    }
+
+    void takeCustomerDetails(Scanner sc) {
+        System.out.print("Enter your name: ");
+        customerName = sc.nextLine();
+        System.out.print("Enter your address: ");
+        customerAddress = sc.nextLine();
+    }
+
+    void processOrder() {
+        Scanner sc = new Scanner(System.in);
+        takeCustomerDetails(sc); // Get customer details
+        takeOrder(sc); // Take the order
+        generateBill(customerName, customerAddress); // Generate the bill
+        sc.close(); // Close Scanner when all inputs are done
+    }
+}
+
+public class AiSuggestTask01 {
+    public static void main(String[] args) {
+        Menu menu = new Menu();
+        menu.addItem("Burger", 5.99);
+        menu.addItem("Pizza", 8.99);
+        menu.addItem("Salad", 4.99);//Example of adding item
+
+        OrderSystem order = new OrderSystem(menu);
+        order.processOrder(); // Process the order
+    }
+}
