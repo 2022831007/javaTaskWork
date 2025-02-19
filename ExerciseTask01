@@ -1,0 +1,92 @@
+//package Exercise;
+
+import java.util.Scanner;
+
+class FoodOrderingSystem {
+    String[] foodNames; 
+    double[] prices;    
+    int[] quantities;   
+
+    FoodOrderingSystem(String[] foodNames, double[] prices) {
+        this.foodNames = foodNames;
+        this.prices = prices;
+        this.quantities = new int[foodNames.length]; 
+    }
+
+    void displayMenu() {
+        for (int i = 0; i < foodNames.length; i++) {
+            System.out.println((i + 1) + ". " + foodNames[i] + " - $" + prices[i]);
+        }
+    }
+
+    void takeOrder() {
+        Scanner sc = new Scanner(System.in);
+        displayMenu();
+        System.out.print("Choose item (1 for " + foodNames[0] + " or 2 for " + foodNames[1] + "): ");
+        int choice = sc.nextInt();
+        System.out.print("Enter quantity: ");
+        int quantity = sc.nextInt();
+
+        if (choice == 1) {
+            quantities[0] = quantity; 
+        } else if (choice == 2) {
+            quantities[1] = quantity; 
+        } else {
+            System.out.println("Invalid choice!");
+            return; 
+        }
+    }
+
+    void generateBill() {
+        double total = 0;
+        System.out.println("===== BILL =====");
+
+        for (int i = 0; i < foodNames.length; i++) {
+            if (quantities[i] > 0) {
+                double itemTotal = quantities[i] * prices[i];
+                System.out.println(foodNames[i] + " x " + quantities[i] + " = $" + itemTotal);
+                total += itemTotal;
+            }
+        }
+        System.out.println("Total Amount: $" + total);
+    }
+}
+
+class OrderSystem extends FoodOrderingSystem {
+    String customerName;
+    String customerAddress;
+
+    OrderSystem(String[] foodNames, double[] prices) {
+        super(foodNames, prices); 
+    }
+
+    void takeCustomerDetails() {
+        Scanner sc = new Scanner(System.in);
+        System.out.print("Enter your name: ");
+        customerName = sc.nextLine();
+        System.out.print("Enter your address: ");
+        customerAddress = sc.nextLine();
+    }
+
+    void generateBillHeader() {
+        System.out.println("===== BILL =====");
+        System.out.println("Customer: " + customerName);
+        System.out.println("Address: " + customerAddress);
+    }
+
+    void processOrder() {
+        takeCustomerDetails(); 
+        takeOrder(); 
+        generateBillHeader(); 
+        generateBill();
+    }
+}
+
+public class ExerciseTask01 {
+    public static void main(String[] args) {
+        String[] foodNames = {"Burger", "Pizza"};
+        double[] prices = {5.99, 8.99};
+        OrderSystem food = new OrderSystem(foodNames, prices);
+        food.processOrder();
+    }
+}
